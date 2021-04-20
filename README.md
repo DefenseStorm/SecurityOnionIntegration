@@ -1,8 +1,16 @@
 This tool provides an easy configuration tool to setup SecuriyOnion 2.3 for
 sending event data to a DVM and to GRID.
 
+To install this tool:
+- Log into your SecurityOnion server via SSH
+- use this comand to get the latest copy of this Integraiton:
+
+git clone https://github.com/DefenseStorm/SecurityOnionIntegration.git
+
 Run the script with sudo and provide the DVM IP address and the script will automatically configure
 SecurityOnion.
+
+sudo ./setup.sh DVM_IP
 
 The following Files will be added/modified in SecurityOnion:
 
