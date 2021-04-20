@@ -9,9 +9,21 @@ if [ "`id -u`" -ne "0" ]; then
 	exit
 fi
 
+if [ $# -ne 1 ]; then
+	echo
+	echo "Usage:"
+	echo "  sudo ./setup.sh <DVM IP>"
+	echo
+	exit
+fi
+
+DVM_IP=$1
+
 PILLAR_FILE=search.sls
-PILLAR=/opt/so/saltstack/local/pillar/logstash/$PILLAR_FILE
-PIPELINE_DIR=/opt/so/saltstack/local/salt/logstash/pipelines/config/custom
+#PILLAR=/opt/so/saltstack/local/pillar/logstash/$PILLAR_FILE
+PILLAR=./$PILLAR_FILE
+#PIPELINE_DIR=/opt/so/saltstack/local/salt/logstash/pipelines/config/custom
+PIPELINE_DIR=./test
 PIPELINE_FILE=DVM.conf
 
 echo "Checking to see if $PIPELINE_FILE exits..."
@@ -46,9 +58,15 @@ else
 	NEW_INSTALL=1
 fi
 
+PIPELINE_TMP=/tmp/$PIPELINE_FILE
+if [ $PIPELINE_CONFIGURED -eq 1 ];then
+	cat $PIPELINE_FILE sed 's/DVM_IP/$DVM_IP/' > $PIPELINE_TMP
+fi
+
+
 PIPELINE_MATCH=0
 echo "Checking to see if this version of $PIPELINE_FILE is already installed..."
-diff $PIPELINE_FILE $PIPELINE_DIR/$PIPELINE_FILE > /dev/null
+diff $PIPELINE_TMP $PIPELINE_DIR/$PIPELINE_FILE > /dev/null
 if [ $? -eq 0 ]; then
 	echo " - $PIPELINE_DIR/$PIPELINE_FILE. Is already current."
 	PIPELINE_MATCH=1
@@ -132,14 +150,14 @@ fi
 
 if [ $PIPELINE_MATCH -eq 0 ] && [ $NEW_INSTALL -eq 0 ]; then
 	echo " - Replacing $PIPELINE_FILE"
-	cp $PIPELINE_FILE $PIPELINE_DIR
+	cat $PIPELINE_FILE sed 's/DVM_IP/$DVM_IP/' > $PIPELINE_DIR/$PIPELINE_FILE
 	chown socore:socore $PIPELINE_DIR/$PIPELINE_FILE
 	chmod 644 $PIPELINE_DIR/$PIPELINE_FILE
 fi
 
 if [ $NEW_INSTALL -eq 1 ];then
 	echo " - Installing $PIPELINE_FILE"
-	cp $PIPELINE_FILE $PIPELINE_DIR
+	cat $PIPELINE_FILE sed 's/DVM_IP/$DVM_IP/' > $PIPELINE_DIR/$PIPELINE_FILE
 	chown socore:socore $PIPELINE_DIR/$PIPELINE_FILE
 	chmod 644 $PIPELINE_DIR/$PIPELINE_FILE
 fi 
