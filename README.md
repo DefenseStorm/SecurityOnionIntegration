@@ -17,4 +17,10 @@ The following Files will be added/modified in SecurityOnion:
 - /opt/so/saltstack/local/salt/logstash/pipelines/config/custom/DVM.conf
 - /opt/so/saltstack/local/pillar/logstash/search.sls
 
+POST SETUP:
 
+Restart logstash:
+sudo so-logstash-restart
+
+Check for Errors:
+sudo tail -f /opt/so/log/logstash/logstash.log
