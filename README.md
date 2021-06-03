@@ -20,7 +20,9 @@ The following Files will be added/modified in SecurityOnion:
 POST SETUP:
 
 Restart logstash:
+
 sudo so-logstash-restart
 
 Check for Errors:
+
 sudo tail -f /opt/so/log/logstash/logstash.log
