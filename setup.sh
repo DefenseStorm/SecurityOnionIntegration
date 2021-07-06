@@ -21,8 +21,11 @@ DVM_IP=$1
 
 PILLAR_FILE=search.sls
 PILLAR=/opt/so/saltstack/local/pillar/logstash/$PILLAR_FILE
+PILLAR_DEFAULT=/opt/so/saltstack/default/pillar/logstash/$PILLAR_FILE
 PIPELINE_DIR=/opt/so/saltstack/local/salt/logstash/pipelines/config/custom
 PIPELINE_FILE=DVM.conf
+RSYSLOG_CONF=defensestorm.conf
+RSYSLOG_DIR=/etc/rsyslog.d
 
 echo "Checking to see if $PIPELINE_FILE exits..."
 if [ -f $PIPELINE_FILE ]; then
@@ -34,11 +37,16 @@ fi
 
 
 echo "Checking SecurityOnion Layout..."
-if [ -f $PILLAR ]; then
+if [ -f "$PILLAR" ]; then
 	echo " - Found Pillar file $PILLAR."
 else
-	echo " - Missing Pillar file $PILLAR. Is this the right version of SecurityOnion?"
-	exit
+	echo " - Missing Pillar file $PILLAR. Do you want to copy it from default?"
+	read -p "are you sure you want to copy it (y/n)? " yn
+	case $yn in
+		[Yy]* ) cp $PILLAR_DEFAULT $PILLAR;break;;
+		[Nn]* ) echo;echo;echo "Exiting."; exit;;
+		* ) "Pease answer y/n.";;
+	esac
 fi
 if [ -d $PIPELINE_DIR ]; then
 	echo " - Found Pipeline directory $PIPELINE_DIR."
@@ -80,6 +88,29 @@ else
 	echo " - $PILLAR is not yet confgiured."
 fi
 
+RSYSLOG_CONFIGURED=0
+echo "Checking to see if $RSYSLOG_DIR is already configured with $RSYSLOG_CONF..."
+if [ -f "${RSYSLOG_DIR}/${RSYSLOG_CONF}" ]; then
+	echo " - $RSYSLOG_CONF is already there."
+	diff $RSYSLOG_CONF ${RSYSLOG_DIR}/${RSYSLOG_CONF} > /dev/null
+	if [ $? -eq 0 ]; then
+		echo "$RSYSLOG_CONF is all set."
+		RSYSLOG_CONFIGURED=1
+	else
+		echo "$RSYSLOG_CONF needs to be updated"
+	fi
+else
+	echo "$RSYSLOG_CONF needs to be updated"
+fi
+
+grep DVM.conf $PILLAR > /dev/null
+if [ $? -eq 0 ]; then
+	echo " - $PILLAR is already configured."
+	PIPELINE_CONFIGURED=1
+else
+	echo " - $PILLAR is not yet confgiured."
+fi
+
 echo
 echo
 echo "Found the following..."
@@ -98,7 +129,7 @@ if [ $NEW_INSTALL -eq 1 ] && [ $PIPELINE_CONFIGURED -eq 1 ]; then
 	exit
 fi
 
-if [ $PIPELINE_CONFIGURED -eq 1 ] && [ $PIPELINE_MATCH -eq 1 ]; then
+if [ $PIPELINE_CONFIGURED -eq 1 ] && [ $PIPELINE_MATCH -eq 1 ] && [ $RSYSLOG_CONFIGURED -eq 1 ]; then
 	echo " - This version of $PIPELINE_FILE is already installed and configured."
 	echo " - Nothing to do. exiting."
 	echo
@@ -109,6 +140,9 @@ echo
 echo "The following actions will be taken:"
 if [ $PIPELINE_CONFIGURED -eq 0 ]; then
 	echo " - Modify the existing $PILLAR file."
+fi
+if [ $RSYSLOG_CONFIGURED -eq 0 ]; then
+	echo " - Update $RSYSLOG_DIR/$RSYSLOG_CONF file."
 fi
 if [ $NEW_INSTALL -eq 0 ]; then
 	echo " - Replace the $PIPELINE_FILE in $PIPELINE_DIR with the one here."
@@ -142,6 +176,11 @@ if [ $PIPELINE_CONFIGURED -eq 0 ]; then
 	cp $PILLAR $PILLAR_BACKUP
 	echo " - Modifying $PILLAR"
 	sed -e "/^.*_input_.*$/a\        - custom/DVM.conf" $PILLAR_BACKUP > $PILLAR
+fi
+
+if [ $RSYSLOG_CONFIGURED -eq 0 ]; then
+	echo " - copying $RSYSLOG_CONF to $RSYSLOG_DIR"
+	cat $RSYSLOG_CONF | sed "s/DVM_IP/$DVM_IP/" > $RSYSLOG_DIR/$RSYSLOG_CONF
 fi
 
 if [ $PIPELINE_MATCH -eq 0 ] && [ $NEW_INSTALL -eq 0 ]; then
