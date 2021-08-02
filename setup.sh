@@ -41,12 +41,14 @@ if [ -f "$PILLAR" ]; then
 	echo " - Found Pillar file $PILLAR."
 else
 	echo " - Missing Pillar file $PILLAR. Do you want to copy it from default?"
-	read -p "are you sure you want to copy it (y/n)? " yn
-	case $yn in
-		[Yy]* ) cp $PILLAR_DEFAULT $PILLAR;break;;
-		[Nn]* ) echo;echo;echo "Exiting."; exit;;
-		* ) "Pease answer y/n.";;
-	esac
+	while true; do
+		read -p "are you sure you want to copy it (y/n)? " yn
+		case $yn in
+			[Yy]* ) cp $PILLAR_DEFAULT $PILLAR; break;;
+			[Nn]* ) echo;echo;echo "Exiting."; exit;;
+			* ) echo "Pease answer y/n.";;
+		esac
+	done
 fi
 if [ -d $PIPELINE_DIR ]; then
 	echo " - Found Pipeline directory $PIPELINE_DIR."
@@ -157,7 +159,7 @@ while true; do
 	case $yn in
 		[Yy]* ) break;;
 		[Nn]* ) echo;echo;exit;;
-		* ) "Pease answer y/n.";;
+		* ) echo "Pease answer y/n.";;
 	esac
 done
 
