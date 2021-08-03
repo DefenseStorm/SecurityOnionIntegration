@@ -3,6 +3,9 @@ sending event data to a DVM and to GRID.
 
 To install this tool:
 - Log into your SecurityOnion server via SSH
+
+NOTE: On a multi-node SO deployment, run this script on the master to deploy and reboot the storage node to take effect immediately (or give it time to pushout)
+
 - use this comand to get the latest copy of this Integraiton:
 
 git clone https://github.com/DefenseStorm/SecurityOnionIntegration.git
