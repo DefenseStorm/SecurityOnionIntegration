@@ -13,6 +13,8 @@ git clone https://github.com/DefenseStorm/SecurityOnionIntegration.git
 Run the script with sudo and provide the DVM IP address and the script will automatically configure
 SecurityOnion.
 
+cd SecurityOnionIntegration
+
 sudo ./setup.sh DVM_IP
 
 The following Files will be added/modified in SecurityOnion:
