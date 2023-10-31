@@ -249,7 +249,7 @@ fi
 
 if [ "$SOVERSION" == "2.4" ] && [ $PIPELINESO_CONFIGURED -eq 0 ]; then
 	echo " - Copying and Updating $PIPELINESO_FILE"
-	cat $PIPELINESO_DEFAULTDIR/$PIPELINESO_FILE | sed "s/\"elastic-agent\" in [tags]/\"elastic-agent\" in [tags] and \"dvm\" not in [tags] /" > $PIPELINESO_DIR/$PIPELINESO_FILE
+	cat $PIPELINESO_DEFAULTDIR/$PIPELINESO_FILE | sed "s/\"elastic-agent\" in \[tags\]/\"elastic-agent\" in [tags] and \"dvm\" not in [tags] /" > $PIPELINESO_DIR/$PIPELINESO_FILE
 	chown socore:socore $PIPELINESO_DIR/$PIPELINESO_FILE
 	chmod 644 $PIPELINESO_DIR/$PIPELINESO_FILE
 fi
