@@ -1,0 +1,42 @@
+filter {
+    if [event][module] == "suricata" or [event][module] == "zeek" {
+      clone {
+        clones => ["dvm"]
+        add_tag => ["dvm"]
+      }
+   }
+}
+filter {
+    if "dvm" in [tags] {
+      json {
+        source => "message"
+        target => "jsonMessage"
+      }
+      mutate {
+          add_field => {
+            "[jsonMessage][category]" => "%{[event][module]}"
+          }
+      }
+    }
+}
+
+filter {
+  if "dvm" in [tags] {
+    mutate {
+      update => { "message" => "%{jsonMessage}" }
+    }
+  }
+}
+
+output {
+  if "dvm" in [tags] {
+    syslog  {
+       host => "192.168.10.6"
+       port => "516"
+       protocol => "tcp"
+       rfc => "rfc5424"
+    }
+
+  }
+}
+

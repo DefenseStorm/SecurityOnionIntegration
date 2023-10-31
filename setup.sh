@@ -27,6 +27,7 @@ PIPELINESO_DIR=/opt/so/saltstack/local/salt/logstash/pipelines/config/so
 PIPELINESO_FILE=9805_output_elastic_agent.conf.jinja
 PIPELINE_DIR=/opt/so/saltstack/local/salt/logstash/pipelines/config/custom
 PIPELINE_FILE=DVM.conf
+PIPELINE24_FILE=DVM.conf.2.4
 RSYSLOG_CONF=defensestorm.conf
 RSYSLOG_DIR=/etc/rsyslog.d
 
@@ -83,7 +84,11 @@ fi
 PIPELINE_MATCH=0
 if [ $NEW_INSTALL -eq 0 ]; then
 	PIPELINE_TMP=/tmp/$PIPELINE_FILE
-	cat $PIPELINE_FILE | sed "s/DVM_IP/$DVM_IP/" > $PIPELINE_TMP
+	if [ "$SOVERSION" == "2.4" ]; then
+		cat $PIPELINE24_FILE | sed "s/DVM_IP/$DVM_IP/" > $PIPELINE_TMP
+	else
+		cat $PIPELINE_FILE | sed "s/DVM_IP/$DVM_IP/" > $PIPELINE_TMP
+	fi
 	echo "Checking to see if this version of $PIPELINE_FILE is already installed..."
 	diff $PIPELINE_TMP $PIPELINE_DIR/$PIPELINE_FILE > /dev/null
 	if [ $? -eq 0 ]; then
