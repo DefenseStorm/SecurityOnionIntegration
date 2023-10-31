@@ -243,9 +243,9 @@ fi
 if [ $NEW_INSTALL -eq 1 ]; then
 	echo " - Installing $PIPELINE_FILE"
 	if [ "$SOVERSION" == "2.4" ]; then
-		cat $PIPELINE24_FILE | sed "s/DVM_IP/$DVM_IP/" > $PIPELINE_TMP
+		cat $PIPELINE24_FILE | sed "s/DVM_IP/$DVM_IP/" > $PIPELINE_DIR/$PIPELINE_FILE
 	else
-		cat $PIPELINE_FILE | sed "s/DVM_IP/$DVM_IP/" > $PIPELINE_TMP
+		cat $PIPELINE_FILE | sed "s/DVM_IP/$DVM_IP/" > $PIPELINE_DIR/$PIPELINE_FILE
 	fi
 	chown socore:socore $PIPELINE_DIR/$PIPELINE_FILE
 	chmod 644 $PIPELINE_DIR/$PIPELINE_FILE
