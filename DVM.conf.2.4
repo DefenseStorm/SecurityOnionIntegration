@@ -31,7 +31,7 @@ filter {
 output {
   if "dvm" in [tags] {
     syslog  {
-       host => "192.168.10.6"
+       host => "DVM_IP"
        port => "516"
        protocol => "tcp"
        rfc => "rfc5424"
