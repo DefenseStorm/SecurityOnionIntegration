@@ -14,18 +14,11 @@ filter {
       }
       mutate {
           add_field => {
-            "[jsonMessage][category]" => "%{[event][module]}"
+            "[jsonMessage][app_name]" => "%{[event][module]}"
           }
+          update => { "host" => "%{[host][hostname]}" }
       }
     }
-}
-
-filter {
-  if "dvm" in [tags] {
-    mutate {
-      update => { "message" => "%{jsonMessage}" }
-    }
-  }
 }
 
 output {
@@ -35,6 +28,9 @@ output {
        port => "516"
        protocol => "tcp"
        rfc => "rfc5424"
+       codec => line {
+         format => "%{jsonMessage}"
+       }
     }
 
   }
