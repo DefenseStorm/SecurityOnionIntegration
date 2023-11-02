@@ -16,18 +16,15 @@ filter {
           add_field => {
             "[jsonMessage][app_name]" => "%{[event][module]}"
           }
-          update => { "host" => "%{[host][hostname]}" }
       }
     }
 }
 
 output {
   if "dvm" in [tags] {
-    syslog  {
+    tcp  {
        host => "DVM_IP"
        port => "516"
-       protocol => "tcp"
-       rfc => "rfc5424"
        codec => line {
          format => "%{jsonMessage}"
        }
@@ -35,4 +32,3 @@ output {
 
   }
 }
-
