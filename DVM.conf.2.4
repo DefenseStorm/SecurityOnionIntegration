@@ -15,6 +15,7 @@ filter {
       mutate {
           add_field => {
             "[jsonMessage][app_name]" => "%{[event][module]}"
+            "[jsonMessage][category]" => "%{[pipeline]}"
           }
       }
     }
