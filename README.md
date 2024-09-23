@@ -1,4 +1,4 @@
-This tool provides an easy configuration tool to setup SecuriyOnion 2.3 for
+This tool provides an easy configuration tool to setup SecuriyOnion 2.3/2.4 for
 sending event data to a DVM and to GRID.
 
 To install this tool:
@@ -15,7 +15,7 @@ SecurityOnion.
 
 cd SecurityOnionIntegration
 
-sudo ./setup.sh DVM_IP
+sudo ./setup.sh <Your DVM IP>
 
 The following Files will be added/modified in SecurityOnion:
 
@@ -31,3 +31,5 @@ sudo so-logstash-restart
 Check for Errors:
 
 sudo tail -f /opt/so/log/logstash/logstash.log
+
+NOTE: Refer to the additional steps required for SO setup in the DefenseStorm KB.
