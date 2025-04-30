@@ -1,5 +1,5 @@
 filter {
-    if [event][module] == "suricata" or [event][module] == "zeek" {
+    if [event][module] == "suricata"  or [event][module] == "zeek" {
       clone {
         clones => ["dvm"]
         add_tag => ["dvm"]
@@ -8,6 +8,7 @@ filter {
 }
 filter {
     if "dvm" in [tags] {
+    if [event][module] == "zeek"{
       json {
         source => "message"
         target => "jsonMessage"
@@ -19,17 +20,38 @@ filter {
           }
       }
     }
+    if [event][module] == "suricata"{
+      json {
+        source => "message"
+        target => "jsonMessage"
+      }
+      mutate {
+          add_field => {
+            "[jsonMessage][app_name]" => "%{[event][module]}"
+          }
+        }
+      json {
+        source => "message"
+        remove_field => ["message"]
+      }
+      mutate {
+        add_field => {
+          "[jsonMessage][category]" => "%{[alert][category]}"
+          }
+        }
+      }
+    }
 }
 
 output {
   if "dvm" in [tags] {
     tcp  {
-       host => "DVM_IP"
-       port => "516"
-       codec => line {
-         format => "%{jsonMessage}"
-       }
+      id => "DVM"
+        host => "DVM_IP"
+        port => "516"
+        codec => line {
+          format => "%{jsonMessage}"
+        }
+      }
     }
-
   }
-}
